@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModNexus - GTA SA & Minecraft Universal Mod Platform</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        darkbg: '#090d16',
+                        darkcard: '#111827',
+                        darkborder: '#1f2937'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #090d16; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #374151; }
+        .hero-overlay {
+            background: linear-gradient(180deg, rgba(9,13,22,0.65) 0%, rgba(9,13,22,0.92) 80%, #090d16 100%);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-darkbg text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white transition-colors duration-300">
+
+    <!-- HEADER NAVBAR -->
+    <header class="sticky top-0 z-40 bg-slate-900/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-800 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <!-- Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchCategory('all')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white font-black shadow-lg shadow-brand-500/20">
+                    <i data-lucide="box" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-black tracking-tight text-white flex items-center gap-1">
+                        Mod<span class="text-brand-500">Nexus</span>
+                    </span>
+                    <span class="text-[10px] text-slate-400 block -mt-1 font-semibold tracking-wider">GTA SA & MINECRAFT HUB</span>
+                </div>
+            </div>
+
+            <!-- Global Search Input -->
+            <div class="hidden md:flex flex-1 max-w-md relative">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cari mod, CLEO, shader, kendaraan, addon..." class="w-full bg-slate-800/80 dark:bg-slate-900/80 text-sm text-slate-100 placeholder-slate-400 pl-10 pr-4 py-2 rounded-xl border border-slate-700/70 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition">
+            </div>
+
+            <!-- Quick Action Controls -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Dark / Light Mode Toggle -->
+                <button onclick="toggleTheme()" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition" title="Toggle Mode Terang/Gelap">
+                    <i data-lucide="moon" id="themeIcon" class="w-4 h-4"></i>
+                </button>
+
+                <!-- My Wallet Button -->
+                <button onclick="openWalletModal()" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs sm:text-sm px-3 py-2 rounded-xl border border-amber-500/30 transition shadow-sm">
+                    <i data-lucide="wallet" class="w-4 h-4 text-amber-400"></i>
+                    <span class="hidden sm:inline">Dompet:</span>
+                    <span id="navWalletBalance">Rp 0</span>
+                </button>
+
+                <!-- Publish Mod -->
+                <button onclick="openPublishModal()" class="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-xl transition shadow-lg shadow-brand-600/20 active:scale-95">
+                    <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Upload Mod</span>
+                </button>
+                
+                <!-- Admin Panel Button -->
+                <div id="adminNavBtn"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO BANNER -->
+    <div id="heroBanner" class="relative bg-cover bg-center py-16 sm:py-24 px-4 transition-all duration-500" style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1600&q=80');">
+        <div class="absolute inset-0 hero-overlay"></div>
+        <div class="relative max-w-7xl mx-auto text-center z-10 space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-brand-500/20 text-brand-400 border border-brand-500/30">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Market & Downloads Mod Terlengkap
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight max-w-3xl mx-auto leading-tight">
+                Pusat Mod <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 via-emerald-300 to-teal-300">GTA San Andreas & Minecraft</span>
+            </h1>
+            <p class="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto font-normal">
+                Jelajahi ribuan mod PC & Mobile. Jual hasil mod buatanmu dengan sistem transaksi e-Wallet langsung (DANA, OVO, GoPay, QRIS) tanpa potongan!
+            </p>
+
+            <!-- Search Mobile -->
+            <div class="mt-4 md:hidden max-w-sm mx-auto relative">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchMobileInput" oninput="handleSearchMobile()" placeholder="Cari mod atau author..." class="w-full bg-slate-900/90 text-sm text-slate-100 placeholder-slate-400 pl-10 pr-4 py-2.5 rounded-xl border border-slate-700 focus:outline-none focus:border-brand-500">
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-6">
+
+        <!-- CATEGORY & SUBCATEGORY FILTER TABS -->
+        <div class="space-y-4 pb-6 border-b border-slate-800/80">
+            <!-- Platform Selector -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
+                <button onclick="switchCategory('all')" id="tab-all" class="cat-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition bg-brand-600 text-white shadow-md">
+                    <i data-lucide="grid" class="w-3.5 h-3.5 inline mr-1"></i> Semua Mod
+                </button>
+                <button onclick="switchCategory('gta-pc')" id="tab-gta-pc" class="cat-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white">
+                    <i data-lucide="monitor" class="w-3.5 h-3.5 inline mr-1"></i> GTA SA (PC)
+                </button>
+                <button onclick="switchCategory('gta-android')" id="tab-gta-android" class="cat-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white">
+                    <i data-lucide="smartphone" class="w-3.5 h-3.5 inline mr-1"></i> GTA SA (Android)
+                </button>
+                <button onclick="switchCategory('mc-java')" id="tab-mc-java" class="cat-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white">
+                    <i data-lucide="cpu" class="w-3.5 h-3.5 inline mr-1"></i> MC Java
+                </button>
+                <button onclick="switchCategory('mc-bedrock')" id="tab-mc-bedrock" class="cat-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white">
+                    <i data-lucide="layers" class="w-3.5 h-3.5 inline mr-1"></i> MC Bedrock / PE
+                </button>
+                <button onclick="switchCategory('marketplace')" id="tab-marketplace" class="cat-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/40">
+                    <i data-lucide="shopping-bag" class="w-3.5 h-3.5 inline mr-1"></i> Marketplace Premium ($)
+                </button>
+            </div>
+
+            <!-- Subcategory & Sorting Bar -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-2xl border border-slate-800">
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                    <span class="text-xs text-slate-400 font-semibold pl-1">Tipe:</span>
+                    <button onclick="setSubCategory('all')" id="sub-all" class="subcat-tab px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-brand-400 border border-brand-500/30">Semua</button>
+                    <button onclick="setSubCategory('Graphics')" id="sub-Graphics" class="subcat-tab px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800/80 text-slate-300 hover:bg-slate-800">Graphics/ENB</button>
+                    <button onclick="setSubCategory('Vehicles')" id="sub-Vehicles" class="subcat-tab px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800/80 text-slate-300 hover:bg-slate-800">Vehicles</button>
+                    <button onclick="setSubCategory('Scripts')" id="sub-Scripts" class="subcat-tab px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800/80 text-slate-300 hover:bg-slate-800">CLEO/Scripts</button>
+                    <button onclick="setSubCategory('Addons')" id="sub-Addons" class="subcat-tab px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800/80 text-slate-300 hover:bg-slate-800">Addons/Skins</button>
+                </div>
+
+                <div class="flex items-center gap-2 self-end sm:self-auto">
+                    <span class="text-xs text-slate-400">Urutkan:</span>
+                    <select id="sortSelect" onchange="renderMods()" class="bg-slate-800 text-xs text-slate-200 border border-slate-700 rounded-xl px-3 py-1.5 focus:outline-none focus:border-brand-500">
+                        <option value="newest">Terbaru</option>
+                        <option value="popular">Paling Banyak Disukai</option>
+                        <option value="downloads">Download Terbanyak</option>
+                        <option value="rating">Rating Tertinggi</option>
+                        <option value="price-low">Harga Termurah</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODS GRID CONTAINER -->
+        <div id="modGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-20 bg-slate-900/40 border border-slate-800 rounded-3xl p-8">
+            <div class="w-16 h-16 bg-slate-800/80 rounded-2xl flex items-center justify-center mx-auto text-slate-500 mb-4">
+                <i data-lucide="package-search" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white">Tidak Ada Mod Ditemukan</h3>
+            <p class="text-slate-400 text-xs mt-1 max-w-md mx-auto">Coba ubah kata kunci pencarian atau kategori. Anda juga bisa mempublikasikan mod buatan sendiri!</p>
+            <button onclick="openPublishModal()" class="mt-4 px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-brand-600/20">
+                Upload Mod Baru
+            </button>
+        </div>
+
+    </main>
+
+    <!-- MOD DETAIL MODAL -->
+    <div id="modDetailModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md hidden p-4 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-4xl w-full max-h-[92vh] overflow-y-auto shadow-2xl relative text-slate-100 my-auto">
+            <button onclick="closeDetailModal()" class="absolute top-4 right-4 z-20 p-2 bg-slate-950/80 hover:bg-slate-800 text-slate-300 rounded-xl transition border border-slate-800">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div id="modDetailContent"></div>
+        </div>
+    </div>
+
+    <!-- PUBLISH / EDIT MOD MODAL -->
+    <div id="publishModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md hidden p-4 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative my-auto">
+            <button onclick="closePublishModal()" class="absolute top-4 right-4 p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <h2 id="modalFormTitle" class="text-xl font-extrabold text-white mb-4 flex items-center gap-2">
+                <i data-lucide="upload-cloud" class="w-5 h-5 text-brand-500"></i> Publikasikan Mod Baru
+            </h2>
+
+            <form id="modForm" onsubmit="handleSaveMod(event)" class="space-y-4">
+                <input type="hidden" id="formModId">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Judul Mod *</label>
+                        <input type="text" id="formTitle" required placeholder="Contoh: Sound Knalpot Drag Vario / ENB Graphics" class="w-full bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl p-2.5 focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Author / Pembuat *</label>
+                        <input type="text" id="formAuthor" required placeholder="Nama Anda / Studio Mod" class="w-full bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl p-2.5 focus:outline-none focus:border-brand-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Game Platform *</label>
+                        <select id="formCategory" required class="w-full bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl p-2.5 focus:outline-none focus:border-brand-500">
+                            <option value="gta-pc">GTA SA (PC)</option>
+                            <option value="gta-android">GTA SA (Android)</option>
+                            <option value="mc-java">Minecraft (Java)</option>
+                            <option value="mc-bedrock">Minecraft (Bedrock/PE)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Tipe / Subkategori *</label>
+                        <select id="formSubCategory" required class="w-full bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl p-2.5 focus:outline-none focus:border-brand-500">
+                            <option value="Graphics">Graphics / ENB / Shader</option>
+                            <option value="Vehicles">Vehicles / Motor / Mobil</option>
+                            <option value="Scripts">CLEO / Scripts / Addon</option>
+                            <option value="Addons">Skins / Map / Texture Pack</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Versi Minimum</label>
+                        <input type="text" id="formGameVersion" placeholder="e.g. v1.08 / MC 1.20+" class="w-full bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl p-2.5 focus:outline-none focus:border-brand-500">
+                    </div>
+                </div>
+
+                <!-- FILE PICKER UNTUK FOTO THUMBNAIL -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Foto Sampul Utama (Klik Upload Foto) *</label>
+                    <div class="flex items-center gap-4">
+                        <label class="flex-1 flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-700 hover:border-brand-500 rounded-xl cursor-pointer bg-slate-800/40 hover:bg-slate-800 transition text-center">
+                            <i data-lucide="image-plus" class="w-5 h-5 text-brand-400 mb-1"></i>
+                            <span class="text-xs text-slate-300 font-medium">Klik pilih gambar thumbnail mod</span>
+                            <input type="file" id="formImageFile" accept="image/*" onchange="handleThumbnailSelect(event)" class="hidden">
+                        </label>
+                        <div id="imagePreviewContainer" class="w-16 h-16 rounded-xl bg-slate-800 border border-slate-700 hidden overflow-hidden flex-shrink-0">
+                            <img id="imagePreview" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MULTI SCREENSHOT FILE PICKER -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Galeri Screenshot Tambahan (Bisa Pilih Banyak Foto)</label>
+                    <label class="flex items-center justify-center p-2.5 border border-slate-700 hover:border-brand-500 rounded-xl cursor-pointer bg-slate-800/40 hover:bg-slate-800 transition text-center text-xs text-slate-300 gap-2">
+                        <i data-lucide="images" class="w-4 h-4 text-emerald-400"></i> Pilih Beberapa Foto Screenshot
+                        <input type="file" id="formGalleryFiles" accept="image/*" multiple onchange="handleGallerySelect(event)" class="hidden">
+                    </label>
+                    <div id="galleryPreviews" class="flex flex-wrap gap-2 mt-2"></div>
+                </div>
+
+                <!-- UPLOAD FILE MOD DIRECT OR LINK -->
+                <div class="p-3 bg-slate-800/50 rounded-xl border border-slate-700/80 space-y-2">
+                    <label class="block text-xs font-bold text-slate-200">File Mod (.zip, .rar, .apk, .mcpack) *</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <label class="flex items-center justify-center p-2 border border-slate-700 rounded-xl cursor-pointer bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 gap-1.5">
+                            <i data-lucide="file-up" class="w-4 h-4 text-brand-400"></i> Pilih File Dari Komputer/HP
+                            <input type="file" id="formModFileDirect" onchange="handleModFileSelect(event)" class="hidden">
+                        </label>
+                        <input type="url" id="formDownloadUrl" placeholder="Atau tempel Link Drive/Mediafire" class="bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:border-brand-500">
+                    </div>
+                    <p id="modFileInfo" class="text-[10px] text-brand-400 font-semibold hidden"></p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Deskripsi & Fitur Mod *</label>
+                    <textarea id="formDescription" rows="2" required placeholder="Jelaskan fitur unggulan..." class="w-full bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl p-2.5 focus:outline-none focus:border-brand-500"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Cara Install (Step-by-Step)</label>
+                    <textarea id="formInstallGuide" rows="2" placeholder="1. Ekstrak file zip &#10;2. Pindahkan folder ke modloader / game directory" class="w-full bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl p-2.5 focus:outline-none focus:border-brand-500"></textarea>
+                </div>
+
+                <!-- OPSI PENJUALAN MOD -->
+                <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-200">Pengaturan Lisensi & Harga:</span>
+                        <div class="flex gap-4">
+                            <label class="inline-flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+                                <input type="radio" name="formPriceType" value="free" checked onchange="togglePriceInput(false)" class="text-brand-500">
+                                Gratis
+                            </label>
+                            <label class="inline-flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+                                <input type="radio" name="formPriceType" value="paid" onchange="togglePriceInput(true)" class="text-brand-500">
+                                Berbayar (Marketplace)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="priceInputGroup" class="hidden">
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Harga Mod (Rp) *</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
+                            <input type="number" id="formPrice" min="1000" placeholder="15000" class="w-full bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl pl-9 pr-3 py-2 focus:outline-none focus:border-brand-500">
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">Uang hasil penjualan pembeli akan otomatis langsung masuk ke Dompet Digital akun Anda!</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closePublishModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-brand-600/20">Simpan & Publikasikan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- WALLET & CREATOR PAYOUT MODAL -->
+    <div id="walletModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md hidden p-4 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative my-auto">
+            <button onclick="closeWalletModal()" class="absolute top-4 right-4 p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-4 border-b border-slate-800 pb-4">
+                <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-2xl flex items-center justify-center font-bold">
+                    <i data-lucide="wallet" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-white">Dompet Penjual & E-Wallet</h3>
+                    <p class="text-xs text-slate-400">Atur rekening penampung & cairkan penghasilan penjualan mod.</p>
+                </div>
+            </div>
+
+            <!-- Balance Overview Card -->
+            <div class="bg-gradient-to-r from-amber-500/20 via-slate-800 to-slate-800 p-4 rounded-2xl border border-amber-500/30 mb-5 flex justify-between items-center">
+                <div>
+                    <span class="text-xs text-slate-400 font-medium block">Total Saldo Penjual:</span>
+                    <span id="modalWalletBalance" class="text-2xl font-black text-amber-400">Rp 0</span>
+                </div>
+                <button onclick="handleWithdrawBalance()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black rounded-xl transition shadow-lg shadow-amber-500/20">
+                    Cairkan Saldo
+                </button>
+            </div>
+
+            <!-- Wallet Account Configuration Form -->
+            <form onsubmit="handleSaveWalletConfig(event)" class="space-y-3">
+                <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                    <i data-lucide="credit-card" class="w-4 h-4 text-brand-400"></i> Rekening / E-Wallet Pencairan Anda
+                </h4>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Provider E-Wallet / Bank</label>
+                        <select id="walletProviderSelect" class="w-full bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl p-2.5">
+                            <option value="DANA">DANA</option>
+                            <option value="OVO">OVO</option>
+                            <option value="GOPAY">GoPay</option>
+                            <option value="SHOPEEPAY">ShopeePay</option>
+                            <option value="QRIS">QRIS All Payment</option>
+                            <option value="BCA">Bank BCA</option>
+                            <option value="MANDIRI">Bank Mandiri</option>
+                            <option value="BRI">Bank BRI</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Nomor HP / Rekening *</label>
+                        <input type="text" id="walletAccountNo" required placeholder="081234567890 / 123456" class="w-full bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl p-2.5">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-300 mb-1">Nama Pemilik Akun *</label>
+                    <input type="text" id="walletAccountName" required placeholder="Nama Sesuai KTP / E-Wallet" class="w-full bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl p-2.5">
+                </div>
+
+                <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold py-2.5 rounded-xl text-xs transition">
+                    Simpan Pengaturan E-Wallet
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- DIRECT CHECKOUT & PAYMENT MODAL -->
+    <div id="paymentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md hidden p-4 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative text-center my-auto">
+            <button onclick="closePaymentModal()" class="absolute top-4 right-4 p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <i data-lucide="qr-code" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-xl font-black text-white">Pembayaran Instant Mod</h3>
+            <p id="payModTitle" class="text-xs text-slate-400 mt-1 font-medium line-clamp-1">Loading...</p>
+
+            <div class="mt-4 p-4 bg-slate-800/70 rounded-2xl border border-slate-700/80 space-y-3">
+                <div class="text-xs text-slate-400">Total Pembayaran:</div>
+                <div id="payModPrice" class="text-3xl font-black text-brand-400">Rp 0</div>
+
+                <!-- Simulated Dynamic QRIS -->
+                <div class="bg-white p-3 rounded-2xl inline-block shadow-lg relative group">
+                    <img id="qrisImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=ModNexusEWalletPaymentSimulated" alt="QRIS" class="w-40 h-40 mx-auto rounded">
+                    <div class="absolute inset-0 bg-slate-950/80 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-[11px] font-bold">
+                        Scan QRIS All E-Wallet
+                    </div>
+                </div>
+
+                <!-- Destination Wallet Detail -->
+                <div id="payDestinationBox" class="text-left bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs space-y-1">
+                    <div class="text-[10px] text-slate-400 uppercase font-bold">Tujuan Transfer Kreator:</div>
+                    <div class="flex justify-between font-bold text-slate-200">
+                        <span id="payDestProvider">DANA</span>
+                        <span id="payDestNo" class="text-brand-400">0812-XXXX-XXXX</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400">a.n <span id="payDestName">Kreator Mod</span></div>
+                </div>
+            </div>
+
+            <div class="mt-4 space-y-2">
+                <button onclick="confirmPaymentSuccess()" class="w-full bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white font-bold py-3 rounded-xl text-xs sm:text-sm shadow-lg shadow-brand-500/20 transition flex items-center justify-center gap-2">
+                    <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                    Konfirmasi & Transfer Langsung ke Dompet
+                </button>
+                <p class="text-[10px] text-slate-500">Dana akan langsung masuk ke dompet digital penjual dan link file download mod otomatis terbuka.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL & BACKGROUND CUSTOMIZER MODAL -->
+    <div id="adminModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md hidden p-4 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative my-auto">
+            <button onclick="closeAdminModal()" class="absolute top-4 right-4 p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Mode Login -->
+            <div id="adminLoginForm">
+                <div class="w-12 h-12 bg-slate-800 text-brand-400 rounded-2xl flex items-center justify-center mb-3">
+                    <i data-lucide="shield-check" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white">Login Admin & Moderasi</h3>
+                <p class="text-xs text-slate-400 mt-1">Masukkan password admin untuk mengelola website, background & transaksi.</p>
+
+                <form onsubmit="handleAdminLogin(event)" class="mt-4 space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Password Admin</label>
+                        <input type="password" id="adminPasswordInput" placeholder="Password bawaan: admin123" class="w-full bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl p-2.5">
+                    </div>
+                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-2.5 rounded-xl text-xs sm:text-sm transition">
+                        Masuk Admin Dashboard
+                    </button>
+                </form>
+
+                <div class="mt-4 pt-3 border-t border-slate-800 text-center">
+                    <button onclick="handleResetAdminPassword()" class="text-xs text-rose-400 hover:text-rose-300 font-medium underline flex items-center justify-center gap-1 mx-auto">
+                        <i data-lucide="key-round" class="w-3.5 h-3.5"></i> Lupa / Hapus Password Admin (Reset Key)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mode Dashboard Admin -->
+            <div id="adminDashboard" class="hidden space-y-5">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                    <div>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="sliders" class="w-5 h-5 text-brand-400"></i> Admin Management Center
+                        </h3>
+                        <span class="text-xs text-emerald-400 font-medium">● Status: Terautentikasi</span>
+                    </div>
+                    <button onclick="handleAdminLogout()" class="px-3 py-1.5 bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 rounded-xl text-xs font-semibold transition">
+                        Logout Admin
+                    </button>
+                </div>
+
+                <!-- Analytics Cards Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="bg-slate-800/50 p-3 rounded-2xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 font-bold block">TOTAL MOD</span>
+                        <span id="admTotalMods" class="text-lg font-black text-white">0</span>
+                    </div>
+                    <div class="bg-slate-800/50 p-3 rounded-2xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 font-bold block">TOTAL DOWNLOAD</span>
+                        <span id="admTotalDownloads" class="text-lg font-black text-brand-400">0</span>
+                    </div>
+                    <div class="bg-slate-800/50 p-3 rounded-2xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 font-bold block">MOD PENDING</span>
+                        <span id="admPendingMods" class="text-lg font-black text-amber-400">0</span>
+                    </div>
+                    <div class="bg-slate-800/50 p-3 rounded-2xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 font-bold block">PENJUALAN</span>
+                        <span id="admTotalRevenue" class="text-lg font-black text-emerald-400">Rp 0</span>
+                    </div>
+                </div>
+
+                <!-- Custom Background Header Customizer -->
+                <div class="bg-slate-800/40 p-4 rounded-2xl border border-slate-800 space-y-3">
+                    <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                        <i data-lucide="image" class="w-4 h-4 text-brand-400"></i> Ubah Background Hero Website
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Option A: Upload Foto Dari Perangkat</label>
+                            <input type="file" id="bgFileInput" accept="image/*" onchange="handleBgFileUpload(event)" class="text-xs text-slate-300 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Option B: Tempel Link Gambar</label>
+                            <div class="flex gap-2">
+                                <input type="url" id="bgUrlInput" placeholder="https://..." class="flex-1 bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl px-2.5 py-1.5">
+                                <button onclick="handleApplyBgUrl()" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-bold">Terapkan</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preset Background Selectors -->
+                    <div>
+                        <span class="text-[11px] text-slate-400 block mb-1">Preset Game Wallpaper:</span>
+                        <div class="flex gap-2 overflow-x-auto no-scrollbar">
+                            <button onclick="applyBgPreset('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1600&q=80')" class="px-2.5 py-1 bg-slate-800 text-[10px] rounded-lg text-slate-300 hover:bg-slate-700">Cyber City</button>
+                            <button onclick="applyBgPreset('https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=1600&q=80')" class="px-2.5 py-1 bg-slate-800 text-[10px] rounded-lg text-slate-300 hover:bg-slate-700">Minecraft Forest</button>
+                            <button onclick="applyBgPreset('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1600&q=80')" class="px-2.5 py-1 bg-slate-800 text-[10px] rounded-lg text-slate-300 hover:bg-slate-700">Retro Neon</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Password Settings -->
+                <div class="bg-slate-800/40 p-4 rounded-2xl border border-slate-800 space-y-3">
+                    <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                        <i data-lucide="lock" class="w-4 h-4 text-brand-400"></i> Pengaturan Password Admin
+                    </h4>
+                    <div>
+                        <label class="block text-xs text-slate-300 mb-1">Password Baru (Kosongkan jika tanpa password)</label>
+                        <div class="flex gap-2">
+                            <input type="password" id="newAdminPasswordInput" placeholder="Ketik password baru..." class="flex-1 bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl px-3 py-2">
+                            <button onclick="handleChangeAdminPassword()" class="px-3 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-bold">Simpan</button>
+                        </div>
+                    </div>
+                    <button onclick="handleRemoveAdminPassword()" class="text-xs text-rose-400 hover:text-rose-300 font-medium underline flex items-center gap-1">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Hapus Password Admin (Akses Langsung)
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 border-t border-slate-800 mt-16 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 space-y-2">
+            <div class="flex justify-center items-center gap-2 text-slate-400 font-semibold mb-2">
+                <i data-lucide="box" class="w-4 h-4 text-brand-500"></i> ModNexus Universal Edition
+            </div>
+            <p>Dukung kreator mod GTA San Andreas & Minecraft Indonesia. Semua file mod dikelola komunitas.</p>
+            <p class="text-[11px] text-slate-600">&copy; 2026 ModNexus Platform. Real-time LocalStorage Engine Ready.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <script>
+        const DEFAULT_MODS = [
+            {
+                id: 'mod-1',
+                title: 'GTA SA Overdose Effects v1.8 HD',
+                category: 'gta-pc',
+                subCategory: 'Graphics',
+                gameVersion: 'GTA SA PC All',
+                author: 'VortexModder',
+                description: 'Efek ledakan, percikan api, asap kendaraan, dan air HD yang membuat gameplay GTA San Andreas PC sangat realistis!',
+                installGuide: '1. Ekstrak file zip\n2. Copy folder ke Modloader atau folder utama GTA SA',
+                image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80',
+                gallery: [
+                    'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80',
+                    'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80'
+                ],
+                downloadUrl: 'https://mediafire.com',
+                modFileName: 'Overdose_Effects_v1.8.zip',
+                modFileSize: '24.5 MB',
+                priceType: 'free',
+                price: 0,
+                likes: 184,
+                downloads: 1250,
+                ratings: [5, 5, 4, 5, 5, 5],
+                comments: [
+                    { id: 'c1', name: 'CJ_Gamer', text: 'Efek asapnya keren banget pas drift!', date: '02/10/2026', replies: [{ name: 'VortexModder', text: 'Terima kasih bro!', date: '02/10/2026' }] }
+                ],
+                createdAt: Date.now() - 86400000 * 3
+            },
+            {
+                id: 'mod-2',
+                title: 'Honda Vario 150 Drag Thailand (APK + DATA)',
+                category: 'gta-android',
+                subCategory: 'Vehicles',
+                gameVersion: 'Android GPU Mali/Adreno',
+                author: 'RiderNusantara',
+                description: 'Mod motor Vario 150 Thailand Look khusus GTA SA Android. Lengkap dengan suara knalpot racing KTC real sound.',
+                installGuide: '1. Impor dff ke gta3.img via GTA Img Tool\n2. Import tekstur via TXD Tool',
+                image: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=800&q=80',
+                gallery: [],
+                downloadUrl: 'https://drive.google.com',
+                modFileName: 'Vario150_Thailand_Android.7z',
+                modFileSize: '12.1 MB',
+                priceType: 'paid',
+                price: 15000,
+                likes: 92,
+                downloads: 430,
+                ratings: [5, 4, 5, 5],
+                comments: [],
+                createdAt: Date.now() - 86400000 * 2
+            },
+            {
+                id: 'mod-3',
+                title: 'BSL Shaders v8.2 Ultra Realistic',
+                category: 'mc-java',
+                subCategory: 'Graphics',
+                gameVersion: 'Minecraft 1.20+',
+                author: 'CaptTatsu',
+                description: 'Shader Minecraft Java Edition terbaik dengan pencahayaan volumatrik, bayangan halus, serta animasi air memukau.',
+                installGuide: '1. Install Optifine / Iris\n2. Masukkan file zip ke folder .minecraft/shaderpacks',
+                image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=800&q=80',
+                gallery: [],
+                downloadUrl: 'https://curseforge.com',
+                modFileName: 'BSL_Shaders_v8.2.zip',
+                modFileSize: '8.4 MB',
+                priceType: 'free',
+                price: 0,
+                likes: 340,
+                downloads: 3890,
+                ratings: [5, 5, 5, 4, 5],
+                comments: [],
+                createdAt: Date.now() - 86400000 * 5
+            }
+        ];
+
+        // STATE APP
+        let modsState = [];
+        let currentCategory = 'all';
+        let currentSubCategory = 'all';
+        let searchQuery = '';
+        let isAdminLoggedIn = false;
+        let adminPassword = 'admin123';
+        let selectedPayMod = null;
+        let sellerWalletBalance = 0;
+        let walletConfig = {
+            provider: 'DANA',
+            accountNo: '081234567890',
+            accountName: 'Kreator ModNexus'
+        };
+
+        // Form Upload State Buffers
+        let formThumbnailBase64 = null;
+        let formGalleryBase64 = [];
+        let formUploadedDirectModFile = null;
+
+        function initStorage() {
+            const storedMods = localStorage.getItem('modnexus_mods');
+            if (storedMods) {
+                try { modsState = JSON.parse(storedMods); } catch(e) { modsState = DEFAULT_MODS; }
+            } else {
+                modsState = DEFAULT_MODS;
+                saveModsToStorage();
+            }
+
+            const storedPass = localStorage.getItem('modnexus_admin_pass');
+            if (storedPass !== null) adminPassword = storedPass;
+
+            const storedBg = localStorage.getItem('modnexus_hero_bg');
+            if (storedBg) document.getElementById('heroBanner').style.backgroundImage = `url('${storedBg}')`;
+
+            const storedBal = localStorage.getItem('modnexus_wallet_balance');
+            if (storedBal) sellerWalletBalance = parseInt(storedBal);
+
+            const storedWalletCfg = localStorage.getItem('modnexus_wallet_config');
+            if (storedWalletCfg) {
+                try { walletConfig = JSON.parse(storedWalletCfg); } catch(e){}
+            }
+
+            updateWalletUI();
+        }
+
+        function saveModsToStorage() {
+            localStorage.setItem('modnexus_mods', JSON.stringify(modsState));
+            renderMods();
+        }
+
+        function updateWalletUI() {
+            document.getElementById('navWalletBalance').innerText = `Rp ${sellerWalletBalance.toLocaleString('id-ID')}`;
+            document.getElementById('modalWalletBalance').innerText = `Rp ${sellerWalletBalance.toLocaleString('id-ID')}`;
+            localStorage.setItem('modnexus_wallet_balance', sellerWalletBalance.toString());
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            document.getElementById('themeIcon').setAttribute('data-lucide', isDark ? 'moon' : 'sun');
+            lucide.createIcons();
+        }
+
+        function switchCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-tab').forEach(btn => {
+                btn.classList.remove('bg-brand-600', 'text-white', 'shadow-md');
+                btn.classList.add('bg-slate-800', 'text-slate-300');
+            });
+
+            const activeBtn = document.getElementById(`tab-${cat}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-800', 'text-slate-300');
+                activeBtn.classList.add('bg-brand-600', 'text-white', 'shadow-md');
+            }
+            renderMods();
+        }
+
+        function setSubCategory(sub) {
+            currentSubCategory = sub;
+            document.querySelectorAll('.subcat-tab').forEach(btn => {
+                btn.classList.remove('bg-slate-800', 'text-brand-400', 'border', 'border-brand-500/30');
+                btn.classList.add('bg-slate-800/80', 'text-slate-300');
+            });
+            const active = document.getElementById(`sub-${sub}`);
+            if (active) {
+                active.classList.remove('bg-slate-800/80', 'text-slate-300');
+                active.classList.add('bg-slate-800', 'text-brand-400', 'border', 'border-brand-500/30');
+            }
+            renderMods();
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            renderMods();
+        }
+        function handleSearchMobile() {
+            searchQuery = document.getElementById('searchMobileInput').value.toLowerCase();
+            renderMods();
+        }
+
+        function renderMods() {
+            const grid = document.getElementById('modGrid');
+            const emptyState = document.getElementById('emptyState');
+            const sortBy = document.getElementById('sortSelect').value;
+
+            let filtered = modsState.filter(mod => {
+                const matchCategory = (currentCategory === 'all') || 
+                                     (currentCategory === 'marketplace' && mod.priceType === 'paid') || 
+                                     (mod.category === currentCategory);
+
+                const matchSub = (currentSubCategory === 'all') || (mod.subCategory === currentSubCategory);
+                
+                const matchSearch = mod.title.toLowerCase().includes(searchQuery) || 
+                                    mod.author.toLowerCase().includes(searchQuery) ||
+                                    mod.description.toLowerCase().includes(searchQuery);
+
+                return matchCategory && matchSub && matchSearch;
+            });
+
+            filtered.sort((a, b) => {
+                if (sortBy === 'newest') return b.createdAt - a.createdAt;
+                if (sortBy === 'popular') return b.likes - a.likes;
+                if (sortBy === 'downloads') return (b.downloads || 0) - (a.downloads || 0);
+                if (sortBy === 'rating') return getAverageRating(b.ratings) - getAverageRating(a.ratings);
+                if (sortBy === 'price-low') return a.price - b.price;
+                return 0;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.innerHTML = filtered.map(mod => {
+                const avgRating = getAverageRating(mod.ratings);
+                const isPaid = mod.priceType === 'paid';
+
+                return `
+                <div class="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-3xl overflow-hidden shadow-lg transition duration-300 flex flex-col group">
+                    <div class="relative h-44 overflow-hidden bg-slate-800 cursor-pointer" onclick="openDetailModal('${mod.id}')">
+                        <img src="${mod.image}" alt="${mod.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/600x400/1e293b/ffffff?text=Mod+Preview'">
+                        <div class="absolute top-3 left-3 flex gap-1">
+                            ${getCategoryBadge(mod.category)}
+                        </div>
+                        <div class="absolute top-3 right-3">
+                            ${isPaid ? `<span class="bg-amber-500 text-slate-950 font-black text-[10px] px-2.5 py-1 rounded-full shadow">Rp ${mod.price.toLocaleString('id-ID')}</span>` 
+                                    : `<span class="bg-emerald-500 text-white font-bold text-[10px] px-2.5 py-1 rounded-full shadow">GRATIS</span>`}
+                        </div>
+                    </div>
+
+                    <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
+                        <div>
+                            <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1">
+                                <span class="font-semibold text-slate-300">By ${escapeHtml(mod.author)}</span>
+                                <span class="flex items-center text-amber-400 font-bold gap-1">
+                                    <i data-lucide="star" class="w-3 h-3 fill-amber-400"></i> ${avgRating.toFixed(1)}
+                                </span>
+                            </div>
+                            <h3 onclick="openDetailModal('${mod.id}')" class="text-sm font-extrabold text-white line-clamp-1 hover:text-brand-400 cursor-pointer transition">
+                                ${escapeHtml(mod.title)}
+                            </h3>
+                            <p class="text-slate-400 text-xs line-clamp-2 mt-1">
+                                ${escapeHtml(mod.description)}
+                            </p>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2 text-xs">
+                            <div class="flex items-center gap-3 text-slate-400 font-medium text-[11px]">
+                                <span class="flex items-center gap-1"><i data-lucide="download" class="w-3.5 h-3.5 text-slate-500"></i> ${mod.downloads || 0}</span>
+                                <button onclick="toggleLike('${mod.id}')" class="flex items-center gap-1 hover:text-rose-400 transition">
+                                    <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-500 fill-rose-500/30"></i> ${mod.likes}
+                                </button>
+                            </div>
+
+                            <div class="flex items-center gap-1">
+                                ${isAdminLoggedIn ? `
+                                    <button onclick="openEditModal('${mod.id}')" title="Edit Mod" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition">
+                                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                    <button onclick="deleteMod('${mod.id}')" title="Hapus Mod" class="p-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-xl transition">
+                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                ` : ''}
+
+                                <button onclick="handleDownloadAction('${mod.id}')" class="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition shadow">
+                                    <i data-lucide="${isPaid ? 'shopping-cart' : 'download'}" class="w-3.5 h-3.5"></i>
+                                    <span>${isPaid ? 'Beli' : 'Get Mod'}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+            updateAdminNavButton();
+            updateAdminStats();
+        }
+
+        function openDetailModal(modId) {
+            const mod = modsState.find(m => m.id === modId);
+            if (!mod) return;
+
+            const avgRating = getAverageRating(mod.ratings);
+            const isPaid = mod.priceType === 'paid';
+
+            const modalContent = document.getElementById('modDetailContent');
+            modalContent.innerHTML = `
+                <div class="relative h-64 sm:h-80 w-full bg-slate-950">
+                    <img src="${mod.image}" alt="${mod.title}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 right-4 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+                        <div>
+                            <div class="flex gap-2 mb-2">${getCategoryBadge(mod.category)}</div>
+                            <h2 class="text-xl sm:text-2xl font-black text-white">${escapeHtml(mod.title)}</h2>
+                            <p class="text-xs text-slate-300 mt-1">Creator: <span class="font-bold text-brand-400">${escapeHtml(mod.author)}</span> | Size: ${mod.modFileSize || 'N/A'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4 p-4 bg-slate-800/60 rounded-2xl border border-slate-700/80">
+                        <div>
+                            <span class="text-xs text-slate-400 block font-semibold">Harga Mod:</span>
+                            <span class="text-xl font-black ${isPaid ? 'text-amber-400' : 'text-emerald-400'}">
+                                ${isPaid ? `Rp ${mod.price.toLocaleString('id-ID')}` : 'GRATIS / FREE DOWNLOAD'}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="toggleLike('${mod.id}'); openDetailModal('${mod.id}');" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-rose-400 px-3.5 py-2 rounded-xl border border-slate-700 text-xs font-bold transition">
+                                <i data-lucide="heart" class="w-4 h-4 fill-rose-500"></i> ${mod.likes}
+                            </button>
+
+                            <button onclick="handleDownloadAction('${mod.id}')" class="flex items-center gap-2 bg-brand-600 hover:bg-brand-500 text-white px-5 py-2 rounded-xl text-xs font-black shadow-lg shadow-brand-500/20 transition">
+                                <i data-lucide="${isPaid ? 'shopping-bag' : 'download'}" class="w-4 h-4"></i>
+                                <span>${isPaid ? 'Beli Via E-Wallet' : 'Download File Mod'}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Screenshot Gallery -->
+                    ${mod.gallery && mod.gallery.length > 0 ? `
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Galeri Screenshot</h4>
+                            <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                                ${mod.gallery.map(img => `
+                                    <img src="${img}" class="h-28 rounded-xl border border-slate-700 object-cover cursor-pointer hover:opacity-90 transition">
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <!-- Description & Install Guide -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-800/40 p-4 rounded-2xl border border-slate-800">
+                            <h4 class="text-xs font-bold text-brand-400 uppercase tracking-wider mb-2">Deskripsi Mod</h4>
+                            <p class="text-slate-300 text-xs leading-relaxed whitespace-pre-line">${escapeHtml(mod.description)}</p>
+                        </div>
+                        <div class="bg-slate-800/40 p-4 rounded-2xl border border-slate-800">
+                            <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">Cara Install Step-by-Step</h4>
+                            <p class="text-slate-300 text-xs leading-relaxed whitespace-pre-line">${mod.installGuide ? escapeHtml(mod.installGuide) : 'Tidak ada panduan khusus.'}</p>
+                        </div>
+                    </div>
+
+                    <!-- Rating System -->
+                    <div class="p-4 bg-slate-800/40 rounded-2xl border border-slate-800 space-y-2">
+                        <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="star" class="w-4 h-4 text-amber-400"></i> Ulasan & Rating Komunitas (${avgRating.toFixed(1)} / 5)
+                        </h4>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-slate-400">Beri Bintang:</span>
+                            <div class="flex gap-1">
+                                ${[1,2,3,4,5].map(star => `
+                                    <button onclick="addRating('${mod.id}', ${star})" class="p-1 text-amber-400 hover:scale-125 transition">
+                                        <i data-lucide="star" class="w-5 h-5 fill-amber-400/20 hover:fill-amber-400"></i>
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comments & Replies Thread -->
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-3">Komentar (${mod.comments.length})</h4>
+
+                        <div class="flex gap-2 mb-4">
+                            <input type="text" id="commentInputName" placeholder="Nama..." class="w-1/3 bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl p-2.5">
+                            <input type="text" id="commentInputText" placeholder="Tulis komentar..." class="flex-1 bg-slate-800 text-xs text-slate-100 border border-slate-700 rounded-xl p-2.5">
+                            <button onclick="handleAddComment('${mod.id}')" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-bold transition">Kirim</button>
+                        </div>
+
+                        <div class="space-y-2 max-h-52 overflow-y-auto pr-1">
+                            ${mod.comments.map(c => `
+                                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 text-xs space-y-1">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-bold text-brand-400">${escapeHtml(c.name)}</span>
+                                        <span class="text-[10px] text-slate-500">${c.date}</span>
+                                    </div>
+                                    <p class="text-slate-300">${escapeHtml(c.text)}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            lucide.createIcons();
+            document.getElementById('modDetailModal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('modDetailModal').classList.add('hidden');
+        }
+
+        function handleThumbnailSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                formThumbnailBase64 = event.target.result;
+                document.getElementById('imagePreview').src = formThumbnailBase64;
+                document.getElementById('imagePreviewContainer').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleGallerySelect(e) {
+            const files = Array.from(e.target.files);
+            formGalleryBase64 = [];
+            const previewsContainer = document.getElementById('galleryPreviews');
+            previewsContainer.innerHTML = '';
+
+            files.slice(0, 5).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    formGalleryBase64.push(event.target.result);
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    img.className = 'w-12 h-12 rounded-lg object-cover border border-slate-700';
+                    previewsContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function handleModFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            formUploadedDirectModFile = file;
+            const sizeInMb = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+            const info = document.getElementById('modFileInfo');
+            info.innerText = `File Terpilih: ${file.name} (${sizeInMb})`;
+            info.classList.remove('hidden');
+        }
+
+        function openPublishModal() {
+            document.getElementById('formModId').value = '';
+            document.getElementById('modForm').reset();
+            formThumbnailBase64 = null;
+            formGalleryBase64 = [];
+            formUploadedDirectModFile = null;
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+            document.getElementById('galleryPreviews').innerHTML = '';
+            document.getElementById('modFileInfo').classList.add('hidden');
+            togglePriceInput(false);
+            document.getElementById('publishModal').classList.remove('hidden');
+        }
+
+        function openEditModal(modId) {
+            const mod = modsState.find(m => m.id === modId);
+            if (!mod) return;
+
+            document.getElementById('formModId').value = mod.id;
+            document.getElementById('formTitle').value = mod.title;
+            document.getElementById('formAuthor').value = mod.author;
+            document.getElementById('formCategory').value = mod.category;
+            document.getElementById('formSubCategory').value = mod.subCategory || 'Graphics';
+            document.getElementById('formGameVersion').value = mod.gameVersion || '';
+            document.getElementById('formDescription').value = mod.description;
+            document.getElementById('formInstallGuide').value = mod.installGuide || '';
+            document.getElementById('formDownloadUrl').value = mod.downloadUrl || '';
+
+            if (mod.priceType === 'paid') {
+                document.querySelector('input[name="formPriceType"][value="paid"]').checked = true;
+                togglePriceInput(true);
+                document.getElementById('formPrice').value = mod.price;
+            } else {
+                document.querySelector('input[name="formPriceType"][value="free"]').checked = true;
+                togglePriceInput(false);
+            }
+
+            formThumbnailBase64 = mod.image;
+            document.getElementById('imagePreview').src = mod.image;
+            document.getElementById('imagePreviewContainer').classList.remove('hidden');
+
+            document.getElementById('publishModal').classList.remove('hidden');
+        }
+
+        function closePublishModal() {
+            document.getElementById('publishModal').classList.add('hidden');
+        }
+
+        function togglePriceInput(isPaid) {
+            const grp = document.getElementById('priceInputGroup');
+            if (isPaid) grp.classList.remove('hidden');
+            else grp.classList.add('hidden');
+        }
+
+        function handleSaveMod(e) {
+            e.preventDefault();
+
+            const modId = document.getElementById('formModId').value;
+            const title = document.getElementById('formTitle').value.trim();
+            const author = document.getElementById('formAuthor').value.trim();
+            const category = document.getElementById('formCategory').value;
+            const subCategory = document.getElementById('formSubCategory').value;
+            const gameVersion = document.getElementById('formGameVersion').value.trim();
+            const description = document.getElementById('formDescription').value.trim();
+            const installGuide = document.getElementById('formInstallGuide').value.trim();
+            const priceType = document.querySelector('input[name="formPriceType"]:checked').value;
+            const price = priceType === 'paid' ? parseInt(document.getElementById('formPrice').value) : 0;
+
+            let downloadUrl = document.getElementById('formDownloadUrl').value.trim();
+            let fileName = 'Mod_File.zip';
+            let fileSize = '10 MB';
+
+            if (formUploadedDirectModFile) {
+                fileName = formUploadedDirectModFile.name;
+                fileSize = (formUploadedDirectModFile.size / (1024 * 1024)).toFixed(1) + ' MB';
+                downloadUrl = '#direct-download';
+            }
+
+            const image = formThumbnailBase64 || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80';
+
+            if (modId) {
+                const idx = modsState.findIndex(m => m.id === modId);
+                if (idx !== -1) {
+                    modsState[idx] = {
+                        ...modsState[idx],
+                        title, author, category, subCategory, gameVersion, description, installGuide, priceType, price, image,
+                        gallery: formGalleryBase64.length > 0 ? formGalleryBase64 : modsState[idx].gallery,
+                        downloadUrl: downloadUrl || modsState[idx].downloadUrl
+                    };
+                    showToast('Mod berhasil diperbarui!', 'success');
+                }
+            } else {
+                const newMod = {
+                    id: 'mod-' + Date.now(),
+                    title, author, category, subCategory, gameVersion, description, installGuide, priceType, price, image,
+                    gallery: formGalleryBase64,
+                    downloadUrl: downloadUrl || 'https://mediafire.com',
+                    modFileName: fileName,
+                    modFileSize: fileSize,
+                    likes: 0,
+                    downloads: 0,
+                    ratings: [5],
+                    comments: [],
+                    createdAt: Date.now()
+                };
+                modsState.unshift(newMod);
+                showToast('Mod baru berhasil dipublikasikan!', 'success');
+            }
+
+            saveModsToStorage();
+            closePublishModal();
+        }
+
+        function deleteMod(modId) {
+            if (confirm('Hapus mod ini dari platform?')) {
+                modsState = modsState.filter(m => m.id !== modId);
+                saveModsToStorage();
+                showToast('Mod dihapus.', 'info');
+            }
+        }
+
+        function openWalletModal() {
+            document.getElementById('walletProviderSelect').value = walletConfig.provider;
+            document.getElementById('walletAccountNo').value = walletConfig.accountNo;
+            document.getElementById('walletAccountName').value = walletConfig.accountName;
+            document.getElementById('walletModal').classList.remove('hidden');
+        }
+
+        function closeWalletModal() {
+            document.getElementById('walletModal').classList.add('hidden');
+        }
+
+        function handleSaveWalletConfig(e) {
+            e.preventDefault();
+            walletConfig = {
+                provider: document.getElementById('walletProviderSelect').value,
+                accountNo: document.getElementById('walletAccountNo').value.trim(),
+                accountName: document.getElementById('walletAccountName').value.trim()
+            };
+            localStorage.setItem('modnexus_wallet_config', JSON.stringify(walletConfig));
+            showToast('Pengaturan E-Wallet berhasil disimpan!', 'success');
+        }
+
+        function handleWithdrawBalance() {
+            if (sellerWalletBalance <= 0) {
+                showToast('Saldo Anda masih 0. Belum ada transaksi penjualan.', 'error');
+                return;
+            }
+            if (confirm(`Cairkan seluruh saldo Rp ${sellerWalletBalance.toLocaleString('id-ID')} ke akun ${walletConfig.provider} (${walletConfig.accountNo})?`)) {
+                showToast(`Pencairan dana Rp ${sellerWalletBalance.toLocaleString('id-ID')} sedang diproses ke e-Wallet!`, 'success');
+                sellerWalletBalance = 0;
+                updateWalletUI();
+            }
+        }
+
+        function handleDownloadAction(modId) {
+            const mod = modsState.find(m => m.id === modId);
+            if (!mod) return;
+
+            if (mod.priceType === 'paid') {
+                selectedPayMod = mod;
+                document.getElementById('payModTitle').innerText = mod.title;
+                document.getElementById('payModPrice').innerText = `Rp ${mod.price.toLocaleString('id-ID')}`;
+                
+                // Set Dest Details
+                document.getElementById('payDestProvider').innerText = walletConfig.provider;
+                document.getElementById('payDestNo').innerText = walletConfig.accountNo;
+                document.getElementById('payDestName').innerText = walletConfig.accountName;
+
+                document.getElementById('paymentModal').classList.remove('hidden');
+            } else {
+                mod.downloads = (mod.downloads || 0) + 1;
+                saveModsToStorage();
+                window.open(mod.downloadUrl, '_blank');
+                showToast('Mengunduh file mod...', 'success');
+            }
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+        }
+
+        function confirmPaymentSuccess() {
+            if (!selectedPayMod) return;
+
+            // Direct Seller Revenue Allocation
+            sellerWalletBalance += selectedPayMod.price;
+            selectedPayMod.downloads = (selectedPayMod.downloads || 0) + 1;
+            updateWalletUI();
+            saveModsToStorage();
+
+            showToast(`Pembayaran Rp ${selectedPayMod.price.toLocaleString('id-ID')} Berhasil! Saldo masuk ke penjual.`, 'success');
+            closePaymentModal();
+
+            setTimeout(() => {
+                window.open(selectedPayMod.downloadUrl, '_blank');
+            }, 800);
+        }
+
+        function toggleLike(modId) {
+            const mod = modsState.find(m => m.id === modId);
+            if (mod) {
+                mod.likes += 1;
+                saveModsToStorage();
+                showToast('Suka ditambahkan!', 'success');
+            }
+        }
+
+        function addRating(modId, stars) {
+            const mod = modsState.find(m => m.id === modId);
+            if (mod) {
+                mod.ratings.push(stars);
+                saveModsToStorage();
+                openDetailModal(modId);
+                showToast(`Rating ${stars} bintang diberikan!`, 'success');
+            }
+        }
+
+        function handleAddComment(modId) {
+            const name = document.getElementById('commentInputName').value.trim() || 'Gamer';
+            const text = document.getElementById('commentInputText').value.trim();
+
+            if (!text) return;
+
+            const mod = modsState.find(m => m.id === modId);
+            if (mod) {
+                mod.comments.unshift({
+                    id: 'c-' + Date.now(),
+                    name, text,
+                    date: new Date().toLocaleDateString('id-ID')
+                });
+                saveModsToStorage();
+                openDetailModal(modId);
+                showToast('Komentar berhasil diposting!', 'success');
+            }
+        }
+
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.remove('hidden');
+            if (isAdminLoggedIn || !adminPassword) {
+                isAdminLoggedIn = true;
+                document.getElementById('adminLoginForm').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+            } else {
+                document.getElementById('adminLoginForm').classList.remove('hidden');
+                document.getElementById('adminDashboard').classList.add('hidden');
+            }
+            updateAdminStats();
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPasswordInput').value;
+            if (pass === adminPassword || !adminPassword) {
+                isAdminLoggedIn = true;
+                showToast('Login Admin Berhasil!', 'success');
+                openAdminModal();
+                renderMods();
+            } else {
+                showToast('Password Admin Salah!', 'error');
+            }
+        }
+
+        function handleAdminLogout() {
+            isAdminLoggedIn = false;
+            showToast('Logout Admin.', 'info');
+            closeAdminModal();
+            renderMods();
+        }
+
+        function handleRemoveAdminPassword() {
+            if (confirm('Hapus password admin secara permanen? Akses admin akan terbuka.')) {
+                adminPassword = '';
+                localStorage.setItem('modnexus_admin_pass', '');
+                showToast('Password Admin dihapus.', 'success');
+                openAdminModal();
+            }
+        }
+
+        function handleResetAdminPassword() {
+            if (confirm('Reset password admin ke admin123?')) {
+                adminPassword = 'admin123';
+                localStorage.setItem('modnexus_admin_pass', 'admin123');
+                showToast('Password di-reset ke: admin123', 'info');
+            }
+        }
+
+        function handleChangeAdminPassword() {
+            const newPass = document.getElementById('newAdminPasswordInput').value.trim();
+            adminPassword = newPass;
+            localStorage.setItem('modnexus_admin_pass', newPass);
+            document.getElementById('newAdminPasswordInput').value = '';
+            showToast('Password Admin berhasil diubah!', 'success');
+        }
+
+        function handleBgFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const bgUrl = event.target.result;
+                document.getElementById('heroBanner').style.backgroundImage = `url('${bgUrl}')`;
+                localStorage.setItem('modnexus_hero_bg', bgUrl);
+                showToast('Background website diperbarui!', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleApplyBgUrl() {
+            const url = document.getElementById('bgUrlInput').value.trim();
+            if (!url) return;
+            applyBgPreset(url);
+        }
+
+        function applyBgPreset(url) {
+            document.getElementById('heroBanner').style.backgroundImage = `url('${url}')`;
+            localStorage.setItem('modnexus_hero_bg', url);
+            showToast('Background preset diterapkan!', 'success');
+        }
+
+        function updateAdminStats() {
+            document.getElementById('admTotalMods').innerText = modsState.length;
+            const totalDl = modsState.reduce((acc, m) => acc + (m.downloads || 0), 0);
+            document.getElementById('admTotalDownloads').innerText = totalDl;
+            document.getElementById('admPendingMods').innerText = '0';
+            document.getElementById('admTotalRevenue').innerText = `Rp ${sellerWalletBalance.toLocaleString('id-ID')}`;
+        }
+
+        function updateAdminNavButton() {
+            const btn = document.getElementById('adminNavBtn');
+            btn.innerHTML = `
+                <button onclick="openAdminModal()" class="flex items-center gap-1.5 ${isAdminLoggedIn ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'} text-xs sm:text-sm font-bold px-3 py-2 rounded-xl transition">
+                    <i data-lucide="${isAdminLoggedIn ? 'sliders' : 'shield'}" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">${isAdminLoggedIn ? 'Admin Panel' : 'Login Admin'}</span>
+                </button>
+            `;
+            lucide.createIcons();
+        }
+
+        function getAverageRating(ratings) {
+            if (!ratings || ratings.length === 0) return 5;
+            return ratings.reduce((a, b) => a + b, 0) / ratings.length;
+        }
+
+        function getCategoryBadge(cat) {
+            const map = {
+                'gta-pc': '<span class="bg-blue-600/90 text-white font-bold text-[10px] px-2.5 py-0.5 rounded-full shadow">GTA SA PC</span>',
+                'gta-android': '<span class="bg-purple-600/90 text-white font-bold text-[10px] px-2.5 py-0.5 rounded-full shadow">GTA Mobile</span>',
+                'mc-java': '<span class="bg-emerald-600/90 text-white font-bold text-[10px] px-2.5 py-0.5 rounded-full shadow">MC Java</span>',
+                'mc-bedrock': '<span class="bg-orange-600/90 text-white font-bold text-[10px] px-2.5 py-0.5 rounded-full shadow">MC Bedrock</span>'
+            };
+            return map[cat] || '<span class="bg-slate-700 text-white text-[10px] px-2.5 py-0.5 rounded-full">General</span>';
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-rose-600' : 'bg-slate-800 border border-slate-700';
+
+            toast.className = `${bgClass} text-white text-xs font-bold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 transform transition duration-300 translate-y-4 opacity-0`;
+            toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle-2' : type === 'error' ? 'alert-circle' : 'info'}" class="w-4 h-4"></i> ${escapeHtml(message)}`;
+
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => toast.classList.remove('translate-y-4', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        window.onload = function() {
+            initStorage();
+            renderMods();
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
